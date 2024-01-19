@@ -1,17 +1,25 @@
-const { Server } = require("socket.io");
 const express = require("express");
 const app = express();
-const WEB_PORT = 3000;
-const PORT = 3001;
-const server = new Server({
+const http = require("http");
+const { Server } = require("socket.io");
+const PORT = 3003;
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
   addTrailingSlash: false,
   cors: { origin: "*" },
-}).listen(PORT);
+});
+
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Socket io server running",
+  });
+});
 
 let sequenceNumberByClient = new Map();
-
-// event fired every time a new client connects:
-server.on("connection", (socket) => {
+io.on("connection", (socket) => {
   console.info(`Client connected [id=${socket.id}]`);
   // initialize this client's sequence number
   sequenceNumberByClient.set(socket, 1);
@@ -25,15 +33,12 @@ server.on("connection", (socket) => {
     console.info(`Client gone [id=${socket.id}]`);
   });
 });
-console.log(`Socket is started at port: ${PORT}`);
 
-//EXPRESS APP
-app.get("/", (req, res) => {
-  res.json({
-    status: "ok",
-    message: `Websocket seerver running on port:${PORT}`,
-  });
+server.listen(PORT, () => {
+  console.log(`listening on *:${PORT}`);
 });
-app.listen(WEB_PORT, () => {
-  console.log(`Example app listening on port ${WEB_PORT}`);
-});
+
+// event fired every time a new client connects:
+//server.on("connection", (socket) => {
+//
+//});
