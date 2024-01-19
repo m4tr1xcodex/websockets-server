@@ -1,8 +1,8 @@
 const { Server } = require("socket.io");
 const express = require("express");
 const app = express();
-const WEB_PORT = 3001;
-const PORT = 3000;
+const WEB_PORT = 3000;
+const PORT = 3001;
 const server = new Server({
   addTrailingSlash: false,
   cors: { origin: "*" },
